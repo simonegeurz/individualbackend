@@ -1,0 +1,43 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postapi
+  template:
+    metadata:
+      labels:
+        app: postapi
+    spec:
+      containers:
+        - name: postapi
+          image: simonegeurtz/postapi:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "500m"
+            limits:
+              memory: "500Mi"
+              cpu: "2000m"
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: { }
+      terminationGracePeriodSeconds: 60
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postapi-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: postapi
+  ports:
+    - name: postapi
+      protocol: TCP
+      port: 80
+      targetPort: 80
